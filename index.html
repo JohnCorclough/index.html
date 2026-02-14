@@ -55,6 +55,14 @@
     .svgSmall { font-size: 13px; }
     .svgNum { font-size: 18px; font-weight: 800; }
     .svgHint { font-size: 13px; }
+
+    /* ✅ Mobile-only: shrink venn circles slightly to reduce clutter */
+    @media (max-width: 600px) {
+      .vennScale {
+        transform: scale(0.88);
+        transform-origin: center;
+      }
+    }
   </style>
 </head>
 <body>
@@ -108,6 +116,7 @@
 
     // A clean, roomy 2-set Venn.
     // Labels are anchored to corners/above circles to avoid collisions on phones.
+    // ✅ Mobile-only circle shrink is applied via <g class="vennScale">...</g>
     function cleanVennSVG({
       leftTitle, rightTitle, // e.g. "Canada (C)", "France (F)"
       leftSub, rightSub,     // e.g. "38%", "80%"
@@ -128,19 +137,21 @@
               <text x="700" y="62" text-anchor="end" class="svgLabel">${escapeHTML(rightTitle)}</text>
               <text x="700" y="86" text-anchor="end" class="svgSub">${escapeHTML(rightSub || "")}</text>
 
-              <!-- Outside label (top-right but below title, with plenty of space) -->
+              <!-- Outside label -->
               ${outsideLabel ? `<text x="700" y="118" text-anchor="end" class="svgSmall">${escapeHTML(outsideLabel)}</text>` : ``}
 
-              <!-- Circles -->
-              <circle cx="310" cy="185" r="110" class="svgStroke"></circle>
-              <circle cx="450" cy="185" r="110" class="svgStroke"></circle>
+              <!-- Circles (mobile scaling group) -->
+              <g class="vennScale">
+                <circle cx="310" cy="185" r="110" class="svgStroke"></circle>
+                <circle cx="450" cy="185" r="110" class="svgStroke"></circle>
+              </g>
 
               <!-- Region notes -->
               ${leftOnly ? `<text x="250" y="190" class="svgSmall">${escapeHTML(leftOnly)}</text>` : ``}
               ${overlap ? `<text x="380" y="190" text-anchor="middle" class="svgSmall">${escapeHTML(overlap)}</text>` : ``}
               ${rightOnly ? `<text x="505" y="190" class="svgSmall">${escapeHTML(rightOnly)}</text>` : ``}
 
-              <!-- Footer (split into 2 lines so it never becomes a long cluttery sentence) -->
+              <!-- Footer (split into 2 lines) -->
               ${footerLine1 ? `<text x="60" y="295" class="svgHint">${escapeHTML(footerLine1)}</text>` : ``}
               ${footerLine2 ? `<text x="60" y="315" class="svgHint">${escapeHTML(footerLine2)}</text>` : ``}
             </svg>
@@ -181,7 +192,8 @@
       });
     }
 
-    // Q11: rebuild with more whitespace and spaced numbers
+    // Q11: more whitespace and spaced numbers
+    // ✅ circles are inside <g class="vennScale"> for mobile scaling
     function q11DiagramSVG() {
       return `
         <div class="diagramWrap">
@@ -192,9 +204,11 @@
               <!-- Titles -->
               <text x="60" y="62" class="svgLabel">ξ (universal set)</text>
 
-              <!-- Circles -->
-              <circle cx="315" cy="210" r="115" class="svgStroke"></circle>
-              <circle cx="465" cy="210" r="115" class="svgStroke"></circle>
+              <!-- Circles (mobile scaling group) -->
+              <g class="vennScale">
+                <circle cx="315" cy="210" r="115" class="svgStroke"></circle>
+                <circle cx="465" cy="210" r="115" class="svgStroke"></circle>
+              </g>
 
               <text x="255" y="120" class="svgLabel">A</text>
               <text x="525" y="120" class="svgLabel">B</text>
@@ -206,12 +220,12 @@
               <text x="390" y="195" text-anchor="middle" class="svgNum">5</text>
               <text x="390" y="235" text-anchor="middle" class="svgNum">1</text>
 
-              <!-- B only: {8,11,10} (spread out) -->
+              <!-- B only: {8,11,10} -->
               <text x="505" y="185" class="svgNum">8</text>
               <text x="535" y="225" class="svgNum">11</text>
               <text x="495" y="255" class="svgNum">10</text>
 
-              <!-- Outside both: {12} placed well away from circle -->
+              <!-- Outside both: {12} -->
               <text x="675" y="210" class="svgNum">12</text>
 
               <!-- Footer -->

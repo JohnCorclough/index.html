@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Venn & Probability Multiple Choice (Q10–Q12)</title>
   <style>
-    :root { --maxw: 920px; }
+    :root { --maxw: 980px; }
     body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; line-height: 1.35; }
     header { padding: 18px 16px; border-bottom: 1px solid #ddd; }
     main { max-width: var(--maxw); margin: 0 auto; padding: 14px 12px 60px; }
@@ -40,15 +40,25 @@
     .btn:active { transform: scale(0.99); }
     details summary { cursor: pointer; }
     code.kbd { padding: 2px 6px; border: 1px solid #ddd; border-radius: 8px; background: #f7f7f7; }
+
+    /* Diagram styling */
+    .diagramWrap { margin: 10px 0 14px; }
+    .diagramBox {
+      border: 1px solid #e0e0e0; border-radius: 14px; padding: 10px; background: #fcfcfc;
+    }
+    svg { width: 100%; height: auto; display: block; }
+    .svgLabel { font-size: 14px; font-weight: 600; }
+    .svgSmall { font-size: 12px; }
+    .svgNum { font-size: 16px; font-weight: 700; }
+    .svgStroke { stroke: #444; stroke-width: 2; fill: transparent; }
+    .svgRect { stroke: #444; stroke-width: 2; fill: transparent; rx: 12; ry: 12; }
+    .svgNote { font-size: 13px; }
   </style>
 </head>
 <body>
   <header>
     <h1>Interactive Multiple Choice: Q10, Q11, Q12</h1>
-    <p class="muted">
-      Tap an answer. Your score updates automatically.
-      (Made for GitHub Pages — works on phones, no typing.)
-    </p>
+    <p class="muted">Tap an answer. Diagrams are shown under each question. (Works on phones; no typing.)</p>
   </header>
 
   <main>
@@ -59,7 +69,7 @@
         <button class="btn" id="resetBtn">Reset all</button>
       </div>
       <p class="muted" style="margin-top:10px">
-        Tip: Put this file in your repo as <code class="kbd">index.html</code>, then enable GitHub Pages.
+        Put this file in your repo as <code class="kbd">index.html</code>, then enable GitHub Pages.
       </p>
     </div>
 
@@ -79,83 +89,187 @@
 
   <script>
     // =========================
-    //  QUIZ DATA (edit freely)
+    //  SVG DIAGRAMS (inline)
     // =========================
-    // Assumptions for Q11 from your diagram:
-    // A-only: {4}
-    // A∩B: {5,1}
-    // B-only: {8,11,10}
-    // Outside both: {12}
+    function vennTwoCirclesSVG({ titleLeft, titleRight, note, leftOnly, overlap, rightOnly, outside }) {
+      // Generic two-set venn with optional region labels
+      return `
+        <div class="diagramWrap">
+          <div class="diagramBox">
+            <svg viewBox="0 0 720 280" role="img" aria-label="Venn diagram">
+              <rect x="18" y="18" width="684" height="244" class="svgRect"></rect>
+
+              <circle cx="290" cy="150" r="95" class="svgStroke"></circle>
+              <circle cx="430" cy="150" r="95" class="svgStroke"></circle>
+
+              <text x="220" y="60" class="svgLabel">${escapeHTML(titleLeft)}</text>
+              <text x="470" y="60" class="svgLabel">${escapeHTML(titleRight)}</text>
+
+              ${leftOnly ? `<text x="245" y="155" class="svgNote">${escapeHTML(leftOnly)}</text>` : ``}
+              ${overlap ? `<text x="360" y="155" text-anchor="middle" class="svgNote">${escapeHTML(overlap)}</text>` : ``}
+              ${rightOnly ? `<text x="475" y="155" class="svgNote">${escapeHTML(rightOnly)}</text>` : ``}
+              ${outside ? `<text x="610" y="85" class="svgNote" text-anchor="end">${escapeHTML(outside)}</text>` : ``}
+
+              ${note ? `<text x="36" y="250" class="svgSmall">${escapeHTML(note)}</text>` : ``}
+            </svg>
+          </div>
+        </div>
+      `;
+    }
+
+    function q11DiagramSVG() {
+      // Matches your sheet: A-only {4}; overlap {5,1}; B-only {8,11,10}; outside {12}
+      return `
+        <div class="diagramWrap">
+          <div class="diagramBox">
+            <svg viewBox="0 0 720 300" role="img" aria-label="Venn diagram with numbers for question 11">
+              <rect x="18" y="18" width="684" height="264" class="svgRect"></rect>
+
+              <text x="34" y="46" class="svgLabel">ξ</text>
+
+              <circle cx="300" cy="165" r="95" class="svgStroke"></circle>
+              <circle cx="430" cy="165" r="95" class="svgStroke"></circle>
+
+              <text x="255" y="88" class="svgLabel">A</text>
+              <text x="465" y="88" class="svgLabel">B</text>
+
+              <!-- A only -->
+              <text x="245" y="170" class="svgNum">4</text>
+
+              <!-- Overlap -->
+              <text x="360" y="150" text-anchor="middle" class="svgNum">5</text>
+              <text x="360" y="185" text-anchor="middle" class="svgNum">1</text>
+
+              <!-- B only -->
+              <text x="460" y="140" class="svgNum">8</text>
+              <text x="485" y="175" class="svgNum">11</text>
+              <text x="445" y="205" class="svgNum">10</text>
+
+              <!-- Outside both -->
+              <text x="610" y="155" class="svgNum">12</text>
+
+              <text x="36" y="275" class="svgSmall">Universal set has 7 equally likely numbers: {4,5,1,8,11,10,12}</text>
+            </svg>
+          </div>
+        </div>
+      `;
+    }
+
+    function q12DiagramSVG() {
+      // Everyone passed at least one => union = 100%
+      // T = 62%, P = 83%, overlap = 45% => T-only 17%, P-only 38%
+      return vennTwoCirclesSVG({
+        titleLeft: "Theory (T) 62%",
+        titleRight: "Practical (P) 83%",
+        leftOnly: "T only: 17%",
+        overlap: "Both: 45%",
+        rightOnly: "P only: 38%",
+        outside: "Outside: 0%",
+        note: "Because everyone passed at least one section, the region outside both circles is 0%."
+      });
+    }
+
+    function q10DiagramSVG() {
+      // Venn idea diagram for inclusion-exclusion (not given as a full labelled region, but helpful)
+      return vennTwoCirclesSVG({
+        titleLeft: "Canada (C) 38%",
+        titleRight: "France (F) 80%",
+        leftOnly: "C only",
+        overlap: "C ∩ F",
+        rightOnly: "F only",
+        outside: "Neither: 11%",
+        note: "Use: P(C ∪ F) = 100% − 11% = 89%, then P(C ∩ F) = P(C)+P(F)−P(C ∪ F)."
+      });
+    }
+
+    function escapeHTML(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    // =========================
+    //  QUIZ DATA
+    // =========================
     const questions = [
       {
         id: "q10",
         title: "Question 10",
-        stem: "38% have been to Canada. 80% have been to France. 11% have been to neither. Find the percentage who have been to <strong>both</strong> Canada and France.",
+        diagramHTML: q10DiagramSVG(),
+        stem: "38% have been to Canada. 80% have been to France. 11% have been to neither Canada nor France. Find the percentage who have been to <strong>both</strong> Canada and France.",
         choices: [
           { text: "29%", correct: true,  explain: "P(C ∪ F)=1−0.11=0.89. Then P(C ∩ F)=0.38+0.80−0.89=0.29 ⇒ 29%." },
-          { text: "7%",  correct: false, explain: "That would be 0.38−0.31 (not a valid inclusion–exclusion result here)." },
-          { text: "31%", correct: false, explain: "31% is P(C) + P(F) − 0.87, but the union is 0.89, not 0.87." },
-          { text: "49%", correct: false, explain: "49% is too high; the intersection can’t exceed the smaller set (38%)." }
+          { text: "7%",  correct: false, explain: "That isn’t the inclusion–exclusion result here." },
+          { text: "31%", correct: false, explain: "You’d only get 31% if the union were 87%, but the union is 89%." },
+          { text: "49%", correct: false, explain: "Too high: the intersection can’t exceed the smaller group (38%)." }
         ]
       },
 
       {
         id: "q11a",
         title: "Question 11(a)",
-        stem: "A number is chosen at random from the universal set shown. Write down <strong>P(A ∩ B')</strong>.",
+        diagramHTML: q11DiagramSVG(),
+        stem: "A number is chosen at random. Write down <strong>P(A ∩ B')</strong>.",
         choices: [
-          { text: "1/7", correct: true,  explain: "A ∩ B' means in A but not in B. That’s just {4}. There are 7 numbers total ⇒ 1/7." },
-          { text: "2/7", correct: false, explain: "2/7 would be the overlap (A ∩ B), not A ∩ B'." },
+          { text: "1/7", correct: true,  explain: "A ∩ B' means in A but not in B. That’s {4}. There are 7 numbers total ⇒ 1/7." },
+          { text: "2/7", correct: false, explain: "2/7 is the overlap (A ∩ B), not A ∩ B'." },
           { text: "3/7", correct: false, explain: "3/7 is P(A) (A-only plus overlap)." },
-          { text: "4/7", correct: false, explain: "4/7 would mean 4 outcomes in the region, but A ∩ B' has only 1 outcome here." }
+          { text: "4/7", correct: false, explain: "A ∩ B' has only 1 outcome here, not 4." }
         ]
       },
 
       {
         id: "q11b",
         title: "Question 11(b)",
+        diagramHTML: q11DiagramSVG(),
         stem: "Write down <strong>P(A' ∪ B')</strong>.",
         choices: [
-          { text: "5/7", correct: true,  explain: "A' ∪ B' = (A ∩ B)' by De Morgan. Overlap has 2 outcomes, so 1 − 2/7 = 5/7." },
+          { text: "5/7", correct: true,  explain: "A' ∪ B' = (A ∩ B)' (De Morgan). Overlap has 2 outcomes, so 1 − 2/7 = 5/7." },
           { text: "2/7", correct: false, explain: "2/7 is P(A ∩ B), not its complement." },
           { text: "3/7", correct: false, explain: "3/7 is P(A), not A' ∪ B'." },
-          { text: "6/7", correct: false, explain: "6/7 would mean only 1 in the overlap, but there are 2 in the overlap." }
+          { text: "6/7", correct: false, explain: "6/7 would mean only 1 number in the overlap, but there are 2." }
         ]
       },
 
       {
         id: "q11c",
         title: "Question 11(c)",
+        diagramHTML: q11DiagramSVG(),
         stem: "Write down <strong>P(B | A)</strong>.",
         choices: [
           { text: "2/3", correct: true,  explain: "In A there are 3 outcomes ({4,5,1}). Of those, 2 are also in B ({5,1}). So P(B|A)=2/3." },
           { text: "2/7", correct: false, explain: "2/7 is P(A ∩ B) (unconditional), not conditional on A." },
           { text: "3/7", correct: false, explain: "3/7 is P(A), not P(B|A)." },
-          { text: "5/7", correct: false, explain: "5/7 is P(A' ∪ B'), from part (b)." }
+          { text: "5/7", correct: false, explain: "5/7 is from part (b), not part (c)." }
         ]
       },
 
       {
         id: "q12a",
         title: "Question 12(a)",
-        stem: "Everyone passed at least one section. 62% passed theory (T) and 83% passed practical (P). Find <strong>P(T | P)</strong>.",
+        diagramHTML: q12DiagramSVG(),
+        stem: "Everyone passed at least one section. 62% passed theory (T) and 83% passed practical (P). Work out <strong>P(T | P)</strong>.",
         choices: [
           { text: "45/83", correct: true,  explain: "P(T∩P)=0.62+0.83−1=0.45. Then P(T|P)=0.45/0.83=45/83." },
           { text: "62/83", correct: false, explain: "That incorrectly uses P(T)/P(P) instead of P(T∩P)/P(P)." },
-          { text: "17/83", correct: false, explain: "0.17 is T-only, not intersection." },
-          { text: "38/83", correct: false, explain: "0.38 is P-only, not intersection." }
+          { text: "17/83", correct: false, explain: "0.17 is T-only, not the intersection." },
+          { text: "38/83", correct: false, explain: "0.38 is P-only, not the intersection." }
         ]
       },
 
       {
         id: "q12b",
         title: "Question 12(b)",
-        stem: "Find the probability a student passed the practical section, <strong>given they passed only one section</strong>.",
+        diagramHTML: q12DiagramSVG(),
+        stem: "Work out the probability the student passed the practical section, <strong>given they passed only one section</strong>.",
         choices: [
-          { text: "38/55", correct: true,  explain: "Only-one-section = T-only + P-only = 0.17+0.38=0.55. Given that, practical means P-only=0.38 ⇒ 0.38/0.55=38/55." },
-          { text: "83/100", correct: false, explain: "83/100 is P(P) overall, not conditional on passing only one section." },
-          { text: "38/100", correct: false, explain: "38/100 is P-only overall, not conditional on only-one-section." },
-          { text: "45/55", correct: false, explain: "0.45 is the intersection (both), not practical-only." }
+          { text: "38/55", correct: true,  explain: "Only-one-section = 0.17+0.38=0.55. Given that, practical means P-only=0.38 ⇒ 0.38/0.55=38/55." },
+          { text: "83/100", correct: false, explain: "That’s P(P) overall, not conditional on passing only one section." },
+          { text: "38/100", correct: false, explain: "That’s P-only overall, not conditional." },
+          { text: "45/55", correct: false, explain: "0.45 is both sections (intersection), not practical-only." }
         ]
       }
     ];
@@ -168,9 +282,7 @@
     const totalEl = document.getElementById("total");
     const resetBtn = document.getElementById("resetBtn");
 
-    // Track answered state
-    // state[qid] = { answered: bool, correct: bool }
-    const state = {};
+    const state = {}; // state[qid] = { answered: bool, correct: bool }
 
     function totalQuestions() { return questions.length; }
 
@@ -200,6 +312,9 @@
         const h = document.createElement("h2");
         h.textContent = q.title;
 
+        const diagram = document.createElement("div");
+        diagram.innerHTML = q.diagramHTML || "";
+
         const stem = document.createElement("div");
         stem.className = "stem";
         stem.innerHTML = q.stem;
@@ -218,26 +333,21 @@
           btn.innerHTML = `${String.fromCharCode(65 + idx)}. ${ch.text}`;
 
           btn.addEventListener("click", () => {
-            if (state[q.id]?.answered) return; // lock after first answer
+            if (state[q.id]?.answered) return;
 
-            // Mark answered
             state[q.id] = { answered: true, correct: !!ch.correct };
 
-            // Disable all options in this question
             [...opts.querySelectorAll("button.option")].forEach(b => b.disabled = true);
 
-            // Show feedback
             feedback.style.display = "block";
             if (ch.correct) {
               setFeedback(feedback, true, `<strong>Correct.</strong> ${ch.explain}`);
             } else {
-              // find correct explanation too
               const right = q.choices.find(x => x.correct);
               setFeedback(feedback, false,
                 `<strong>Not quite.</strong> ${ch.explain}<br><br><strong>Correct answer:</strong> ${right.text}<br>${right.explain}`
               );
             }
-
             updateScoreUI();
           });
 
@@ -245,6 +355,7 @@
         });
 
         card.appendChild(h);
+        card.appendChild(diagram);
         card.appendChild(stem);
         card.appendChild(opts);
         card.appendChild(feedback);

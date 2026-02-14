@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Venn & Probability Multiple Choice (Q10–Q12)</title>
+  <style>
+    :root { --maxw: 920px; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; line-height: 1.35; }
+    header { padding: 18px 16px; border-bottom: 1px solid #ddd; }
+    main { max-width: var(--maxw); margin: 0 auto; padding: 14px 12px 60px; }
+    .card { border: 1px solid #ddd; border-radius: 14px; padding: 14px; margin: 12px 0; background: #fff; box-shadow: 0 1px 0 rgba(0,0,0,0.03); }
+    h1 { font-size: 18px; margin: 0 0 4px; }
+    .muted { color: #555; font-size: 13px; margin: 0; }
+    h2 { font-size: 16px; margin: 0 0 10px; }
+    .stem { margin: 8px 0 12px; }
+    .options { display: grid; gap: 10px; }
+    button.option {
+      width: 100%;
+      text-align: left;
+      border: 1px solid #ccc;
+      background: #fafafa;
+      padding: 12px 12px;
+      border-radius: 12px;
+      font-size: 15px;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    button.option:active { transform: scale(0.99); }
+    button.option[disabled] { cursor: not-allowed; opacity: 0.75; }
+    .feedback { margin-top: 10px; padding: 10px 12px; border-radius: 12px; border: 1px solid #ddd; background: #f7f7f7; }
+    .correct { border-color: #2b8a3e; background: #f1fff5; }
+    .wrong { border-color: #b02a37; background: #fff3f3; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+    .pill { border: 1px solid #ddd; border-radius: 999px; padding: 8px 10px; font-size: 13px; background: #fff; }
+    .btn {
+      border: 1px solid #bbb; background: #fff; padding: 10px 12px; border-radius: 12px;
+      cursor: pointer; font-size: 14px; touch-action: manipulation;
+    }
+    .btn:active { transform: scale(0.99); }
+    details summary { cursor: pointer; }
+    code.kbd { padding: 2px 6px; border: 1px solid #ddd; border-radius: 8px; background: #f7f7f7; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Interactive Multiple Choice: Q10, Q11, Q12</h1>
+    <p class="muted">
+      Tap an answer. Your score updates automatically.
+      (Made for GitHub Pages — works on phones, no typing.)
+    </p>
+  </header>
+
+  <main>
+    <div class="card">
+      <h2>Score</h2>
+      <div class="row">
+        <div class="pill"><strong id="score">0</strong> / <strong id="total">0</strong> correct</div>
+        <button class="btn" id="resetBtn">Reset all</button>
+      </div>
+      <p class="muted" style="margin-top:10px">
+        Tip: Put this file in your repo as <code class="kbd">index.html</code>, then enable GitHub Pages.
+      </p>
+    </div>
+
+    <div id="quiz"></div>
+
+    <details class="card">
+      <summary><strong>Teacher notes (answers used)</strong></summary>
+      <div style="margin-top:10px" class="muted">
+        <ul>
+          <li><strong>Q10:</strong> 29%</li>
+          <li><strong>Q11:</strong> (a) 1/7, (b) 5/7, (c) 2/3</li>
+          <li><strong>Q12:</strong> Intersection = 0.45, (a) 45/83, (b) 38/55</li>
+        </ul>
+      </div>
+    </details>
+  </main>
+
+  <script>
+    // =========================
+    //  QUIZ DATA (edit freely)
+    // =========================
+    // Assumptions for Q11 from your diagram:
+    // A-only: {4}
+    // A∩B: {5,1}
+    // B-only: {8,11,10}
+    // Outside both: {12}
+    const questions = [
+      {
+        id: "q10",
+        title: "Question 10",
+        stem: "38% have been to Canada. 80% have been to France. 11% have been to neither. Find the percentage who have been to <strong>both</strong> Canada and France.",
+        choices: [
+          { text: "29%", correct: true,  explain: "P(C ∪ F)=1−0.11=0.89. Then P(C ∩ F)=0.38+0.80−0.89=0.29 ⇒ 29%." },
+          { text: "7%",  correct: false, explain: "That would be 0.38−0.31 (not a valid inclusion–exclusion result here)." },
+          { text: "31%", correct: false, explain: "31% is P(C) + P(F) − 0.87, but the union is 0.89, not 0.87." },
+          { text: "49%", correct: false, explain: "49% is too high; the intersection can’t exceed the smaller set (38%)." }
+        ]
+      },
+
+      {
+        id: "q11a",
+        title: "Question 11(a)",
+        stem: "A number is chosen at random from the universal set shown. Write down <strong>P(A ∩ B')</strong>.",
+        choices: [
+          { text: "1/7", correct: true,  explain: "A ∩ B' means in A but not in B. That’s just {4}. There are 7 numbers total ⇒ 1/7." },
+          { text: "2/7", correct: false, explain: "2/7 would be the overlap (A ∩ B), not A ∩ B'." },
+          { text: "3/7", correct: false, explain: "3/7 is P(A) (A-only plus overlap)." },
+          { text: "4/7", correct: false, explain: "4/7 would mean 4 outcomes in the region, but A ∩ B' has only 1 outcome here." }
+        ]
+      },
+
+      {
+        id: "q11b",
+        title: "Question 11(b)",
+        stem: "Write down <strong>P(A' ∪ B')</strong>.",
+        choices: [
+          { text: "5/7", correct: true,  explain: "A' ∪ B' = (A ∩ B)' by De Morgan. Overlap has 2 outcomes, so 1 − 2/7 = 5/7." },
+          { text: "2/7", correct: false, explain: "2/7 is P(A ∩ B), not its complement." },
+          { text: "3/7", correct: false, explain: "3/7 is P(A), not A' ∪ B'." },
+          { text: "6/7", correct: false, explain: "6/7 would mean only 1 in the overlap, but there are 2 in the overlap." }
+        ]
+      },
+
+      {
+        id: "q11c",
+        title: "Question 11(c)",
+        stem: "Write down <strong>P(B | A)</strong>.",
+        choices: [
+          { text: "2/3", correct: true,  explain: "In A there are 3 outcomes ({4,5,1}). Of those, 2 are also in B ({5,1}). So P(B|A)=2/3." },
+          { text: "2/7", correct: false, explain: "2/7 is P(A ∩ B) (unconditional), not conditional on A." },
+          { text: "3/7", correct: false, explain: "3/7 is P(A), not P(B|A)." },
+          { text: "5/7", correct: false, explain: "5/7 is P(A' ∪ B'), from part (b)." }
+        ]
+      },
+
+      {
+        id: "q12a",
+        title: "Question 12(a)",
+        stem: "Everyone passed at least one section. 62% passed theory (T) and 83% passed practical (P). Find <strong>P(T | P)</strong>.",
+        choices: [
+          { text: "45/83", correct: true,  explain: "P(T∩P)=0.62+0.83−1=0.45. Then P(T|P)=0.45/0.83=45/83." },
+          { text: "62/83", correct: false, explain: "That incorrectly uses P(T)/P(P) instead of P(T∩P)/P(P)." },
+          { text: "17/83", correct: false, explain: "0.17 is T-only, not intersection." },
+          { text: "38/83", correct: false, explain: "0.38 is P-only, not intersection." }
+        ]
+      },
+
+      {
+        id: "q12b",
+        title: "Question 12(b)",
+        stem: "Find the probability a student passed the practical section, <strong>given they passed only one section</strong>.",
+        choices: [
+          { text: "38/55", correct: true,  explain: "Only-one-section = T-only + P-only = 0.17+0.38=0.55. Given that, practical means P-only=0.38 ⇒ 0.38/0.55=38/55." },
+          { text: "83/100", correct: false, explain: "83/100 is P(P) overall, not conditional on passing only one section." },
+          { text: "38/100", correct: false, explain: "38/100 is P-only overall, not conditional on only-one-section." },
+          { text: "45/55", correct: false, explain: "0.45 is the intersection (both), not practical-only." }
+        ]
+      }
+    ];
+
+    // =========================
+    //  RENDER + LOGIC
+    // =========================
+    const quizEl = document.getElementById("quiz");
+    const scoreEl = document.getElementById("score");
+    const totalEl = document.getElementById("total");
+    const resetBtn = document.getElementById("resetBtn");
+
+    // Track answered state
+    // state[qid] = { answered: bool, correct: bool }
+    const state = {};
+
+    function totalQuestions() { return questions.length; }
+
+    function computeScore() {
+      let s = 0;
+      for (const q of questions) if (state[q.id]?.answered && state[q.id]?.correct) s++;
+      return s;
+    }
+
+    function updateScoreUI() {
+      scoreEl.textContent = computeScore();
+      totalEl.textContent = totalQuestions();
+    }
+
+    function setFeedback(box, isCorrect, text) {
+      box.className = "feedback " + (isCorrect ? "correct" : "wrong");
+      box.innerHTML = text;
+    }
+
+    function render() {
+      quizEl.innerHTML = "";
+      for (const q of questions) {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.id = q.id;
+
+        const h = document.createElement("h2");
+        h.textContent = q.title;
+
+        const stem = document.createElement("div");
+        stem.className = "stem";
+        stem.innerHTML = q.stem;
+
+        const opts = document.createElement("div");
+        opts.className = "options";
+
+        const feedback = document.createElement("div");
+        feedback.className = "feedback";
+        feedback.style.display = "none";
+
+        q.choices.forEach((ch, idx) => {
+          const btn = document.createElement("button");
+          btn.className = "option";
+          btn.type = "button";
+          btn.innerHTML = `${String.fromCharCode(65 + idx)}. ${ch.text}`;
+
+          btn.addEventListener("click", () => {
+            if (state[q.id]?.answered) return; // lock after first answer
+
+            // Mark answered
+            state[q.id] = { answered: true, correct: !!ch.correct };
+
+            // Disable all options in this question
+            [...opts.querySelectorAll("button.option")].forEach(b => b.disabled = true);
+
+            // Show feedback
+            feedback.style.display = "block";
+            if (ch.correct) {
+              setFeedback(feedback, true, `<strong>Correct.</strong> ${ch.explain}`);
+            } else {
+              // find correct explanation too
+              const right = q.choices.find(x => x.correct);
+              setFeedback(feedback, false,
+                `<strong>Not quite.</strong> ${ch.explain}<br><br><strong>Correct answer:</strong> ${right.text}<br>${right.explain}`
+              );
+            }
+
+            updateScoreUI();
+          });
+
+          opts.appendChild(btn);
+        });
+
+        card.appendChild(h);
+        card.appendChild(stem);
+        card.appendChild(opts);
+        card.appendChild(feedback);
+        quizEl.appendChild(card);
+      }
+
+      updateScoreUI();
+    }
+
+    function resetAll() {
+      for (const k of Object.keys(state)) delete state[k];
+      render();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    resetBtn.addEventListener("click", resetAll);
+
+    render();
+  </script>
+</body>
+</html>

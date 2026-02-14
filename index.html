@@ -41,18 +41,20 @@
     details summary { cursor: pointer; }
     code.kbd { padding: 2px 6px; border: 1px solid #ddd; border-radius: 8px; background: #f7f7f7; }
 
-    /* Diagram styling */
+    /* Diagrams */
     .diagramWrap { margin: 10px 0 14px; }
     .diagramBox {
       border: 1px solid #e0e0e0; border-radius: 14px; padding: 10px; background: #fcfcfc;
     }
     svg { width: 100%; height: auto; display: block; }
-    .svgLabel { font-size: 14px; font-weight: 600; }
-    .svgSmall { font-size: 12px; }
-    .svgNum { font-size: 16px; font-weight: 700; }
-    .svgStroke { stroke: #444; stroke-width: 2; fill: transparent; }
-    .svgRect { stroke: #444; stroke-width: 2; fill: transparent; rx: 12; ry: 12; }
-    .svgNote { font-size: 13px; }
+
+    .svgRect { stroke: #444; stroke-width: 2; fill: transparent; rx: 14; ry: 14; }
+    .svgStroke { stroke: #444; stroke-width: 2.5; fill: transparent; }
+    .svgLabel { font-size: 16px; font-weight: 700; }
+    .svgSub { font-size: 14px; font-weight: 600; }
+    .svgSmall { font-size: 13px; }
+    .svgNum { font-size: 18px; font-weight: 800; }
+    .svgHint { font-size: 13px; }
   </style>
 </head>
 <body>
@@ -69,7 +71,7 @@
         <button class="btn" id="resetBtn">Reset all</button>
       </div>
       <p class="muted" style="margin-top:10px">
-        Put this file in your repo as <code class="kbd">index.html</code>, then enable GitHub Pages.
+        Keep this file named <code class="kbd">index.html</code>.
       </p>
     </div>
 
@@ -89,99 +91,8 @@
 
   <script>
     // =========================
-    //  SVG DIAGRAMS (inline)
+    //  Helpers
     // =========================
-    function vennTwoCirclesSVG({ titleLeft, titleRight, note, leftOnly, overlap, rightOnly, outside }) {
-      // Generic two-set venn with optional region labels
-      return `
-        <div class="diagramWrap">
-          <div class="diagramBox">
-            <svg viewBox="0 0 720 280" role="img" aria-label="Venn diagram">
-              <rect x="18" y="18" width="684" height="244" class="svgRect"></rect>
-
-              <circle cx="290" cy="150" r="95" class="svgStroke"></circle>
-              <circle cx="430" cy="150" r="95" class="svgStroke"></circle>
-
-              <text x="220" y="60" class="svgLabel">${escapeHTML(titleLeft)}</text>
-              <text x="470" y="60" class="svgLabel">${escapeHTML(titleRight)}</text>
-
-              ${leftOnly ? `<text x="245" y="155" class="svgNote">${escapeHTML(leftOnly)}</text>` : ``}
-              ${overlap ? `<text x="360" y="155" text-anchor="middle" class="svgNote">${escapeHTML(overlap)}</text>` : ``}
-              ${rightOnly ? `<text x="475" y="155" class="svgNote">${escapeHTML(rightOnly)}</text>` : ``}
-              ${outside ? `<text x="610" y="85" class="svgNote" text-anchor="end">${escapeHTML(outside)}</text>` : ``}
-
-              ${note ? `<text x="36" y="250" class="svgSmall">${escapeHTML(note)}</text>` : ``}
-            </svg>
-          </div>
-        </div>
-      `;
-    }
-
-    function q11DiagramSVG() {
-      // Matches your sheet: A-only {4}; overlap {5,1}; B-only {8,11,10}; outside {12}
-      return `
-        <div class="diagramWrap">
-          <div class="diagramBox">
-            <svg viewBox="0 0 720 300" role="img" aria-label="Venn diagram with numbers for question 11">
-              <rect x="18" y="18" width="684" height="264" class="svgRect"></rect>
-
-              <text x="34" y="46" class="svgLabel">ξ</text>
-
-              <circle cx="300" cy="165" r="95" class="svgStroke"></circle>
-              <circle cx="430" cy="165" r="95" class="svgStroke"></circle>
-
-              <text x="255" y="88" class="svgLabel">A</text>
-              <text x="465" y="88" class="svgLabel">B</text>
-
-              <!-- A only -->
-              <text x="245" y="170" class="svgNum">4</text>
-
-              <!-- Overlap -->
-              <text x="360" y="150" text-anchor="middle" class="svgNum">5</text>
-              <text x="360" y="185" text-anchor="middle" class="svgNum">1</text>
-
-              <!-- B only -->
-              <text x="460" y="140" class="svgNum">8</text>
-              <text x="485" y="175" class="svgNum">11</text>
-              <text x="445" y="205" class="svgNum">10</text>
-
-              <!-- Outside both -->
-              <text x="610" y="155" class="svgNum">12</text>
-
-              <text x="36" y="275" class="svgSmall">Universal set has 7 equally likely numbers: {4,5,1,8,11,10,12}</text>
-            </svg>
-          </div>
-        </div>
-      `;
-    }
-
-    function q12DiagramSVG() {
-      // Everyone passed at least one => union = 100%
-      // T = 62%, P = 83%, overlap = 45% => T-only 17%, P-only 38%
-      return vennTwoCirclesSVG({
-        titleLeft: "Theory (T) 62%",
-        titleRight: "Practical (P) 83%",
-        leftOnly: "T only: 17%",
-        overlap: "Both: 45%",
-        rightOnly: "P only: 38%",
-        outside: "Outside: 0%",
-        note: "Because everyone passed at least one section, the region outside both circles is 0%."
-      });
-    }
-
-    function q10DiagramSVG() {
-      // Venn idea diagram for inclusion-exclusion (not given as a full labelled region, but helpful)
-      return vennTwoCirclesSVG({
-        titleLeft: "Canada (C) 38%",
-        titleRight: "France (F) 80%",
-        leftOnly: "C only",
-        overlap: "C ∩ F",
-        rightOnly: "F only",
-        outside: "Neither: 11%",
-        note: "Use: P(C ∪ F) = 100% − 11% = 89%, then P(C ∩ F) = P(C)+P(F)−P(C ∪ F)."
-      });
-    }
-
     function escapeHTML(str) {
       return String(str)
         .replaceAll("&", "&amp;")
@@ -189,6 +100,127 @@
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
+    }
+
+    // =========================
+    //  Cleaner SVG diagrams
+    // =========================
+
+    // A clean, roomy 2-set Venn.
+    // Labels are anchored to corners/above circles to avoid collisions on phones.
+    function cleanVennSVG({
+      leftTitle, rightTitle, // e.g. "Canada (C)", "France (F)"
+      leftSub, rightSub,     // e.g. "38%", "80%"
+      outsideLabel,          // e.g. "Neither: 11%" or "Outside: 0%"
+      leftOnly, overlap, rightOnly,
+      footerLine1, footerLine2
+    }) {
+      return `
+        <div class="diagramWrap">
+          <div class="diagramBox">
+            <svg viewBox="0 0 760 340" role="img" aria-label="Venn diagram">
+              <rect x="20" y="20" width="720" height="300" class="svgRect"></rect>
+
+              <!-- Titles (top corners) -->
+              <text x="60" y="62" class="svgLabel">${escapeHTML(leftTitle)}</text>
+              <text x="60" y="86" class="svgSub">${escapeHTML(leftSub || "")}</text>
+
+              <text x="700" y="62" text-anchor="end" class="svgLabel">${escapeHTML(rightTitle)}</text>
+              <text x="700" y="86" text-anchor="end" class="svgSub">${escapeHTML(rightSub || "")}</text>
+
+              <!-- Outside label (top-right but below title, with plenty of space) -->
+              ${outsideLabel ? `<text x="700" y="118" text-anchor="end" class="svgSmall">${escapeHTML(outsideLabel)}</text>` : ``}
+
+              <!-- Circles -->
+              <circle cx="310" cy="185" r="110" class="svgStroke"></circle>
+              <circle cx="450" cy="185" r="110" class="svgStroke"></circle>
+
+              <!-- Region notes -->
+              ${leftOnly ? `<text x="250" y="190" class="svgSmall">${escapeHTML(leftOnly)}</text>` : ``}
+              ${overlap ? `<text x="380" y="190" text-anchor="middle" class="svgSmall">${escapeHTML(overlap)}</text>` : ``}
+              ${rightOnly ? `<text x="505" y="190" class="svgSmall">${escapeHTML(rightOnly)}</text>` : ``}
+
+              <!-- Footer (split into 2 lines so it never becomes a long cluttery sentence) -->
+              ${footerLine1 ? `<text x="60" y="295" class="svgHint">${escapeHTML(footerLine1)}</text>` : ``}
+              ${footerLine2 ? `<text x="60" y="315" class="svgHint">${escapeHTML(footerLine2)}</text>` : ``}
+            </svg>
+          </div>
+        </div>
+      `;
+    }
+
+    // Q10: minimal labels inside; short, split hint
+    function q10DiagramSVG() {
+      return cleanVennSVG({
+        leftTitle: "Canada (C)",
+        leftSub: "38%",
+        rightTitle: "France (F)",
+        rightSub: "80%",
+        outsideLabel: "Neither: 11%",
+        leftOnly: "C only",
+        overlap: "C ∩ F",
+        rightOnly: "F only",
+        footerLine1: "Step 1: P(C ∪ F) = 100% − 11% = 89%",
+        footerLine2: "Step 2: P(C ∩ F) = P(C) + P(F) − P(C ∪ F)"
+      });
+    }
+
+    // Q12: same clean layout but with actual region % values
+    function q12DiagramSVG() {
+      return cleanVennSVG({
+        leftTitle: "Theory (T)",
+        leftSub: "62%",
+        rightTitle: "Practical (P)",
+        rightSub: "83%",
+        outsideLabel: "Outside: 0%",
+        leftOnly: "T only: 17%",
+        overlap: "Both: 45%",
+        rightOnly: "P only: 38%",
+        footerLine1: "Everyone passed at least one section ⇒ outside region is 0%",
+        footerLine2: "Overlap = 62% + 83% − 100% = 45%"
+      });
+    }
+
+    // Q11: rebuild with more whitespace and spaced numbers
+    function q11DiagramSVG() {
+      return `
+        <div class="diagramWrap">
+          <div class="diagramBox">
+            <svg viewBox="0 0 760 360" role="img" aria-label="Venn diagram with numbers for question 11">
+              <rect x="20" y="20" width="720" height="320" class="svgRect"></rect>
+
+              <!-- Titles -->
+              <text x="60" y="62" class="svgLabel">ξ (universal set)</text>
+
+              <!-- Circles -->
+              <circle cx="315" cy="210" r="115" class="svgStroke"></circle>
+              <circle cx="465" cy="210" r="115" class="svgStroke"></circle>
+
+              <text x="255" y="120" class="svgLabel">A</text>
+              <text x="525" y="120" class="svgLabel">B</text>
+
+              <!-- A only: {4} -->
+              <text x="260" y="220" class="svgNum">4</text>
+
+              <!-- Overlap: {5,1} -->
+              <text x="390" y="195" text-anchor="middle" class="svgNum">5</text>
+              <text x="390" y="235" text-anchor="middle" class="svgNum">1</text>
+
+              <!-- B only: {8,11,10} (spread out) -->
+              <text x="505" y="185" class="svgNum">8</text>
+              <text x="535" y="225" class="svgNum">11</text>
+              <text x="495" y="255" class="svgNum">10</text>
+
+              <!-- Outside both: {12} placed well away from circle -->
+              <text x="675" y="210" class="svgNum">12</text>
+
+              <!-- Footer -->
+              <text x="60" y="308" class="svgHint">Total outcomes = 7: {4, 5, 1, 8, 11, 10, 12}</text>
+              <text x="60" y="328" class="svgHint">All outcomes are equally likely.</text>
+            </svg>
+          </div>
+        </div>
+      `;
     }
 
     // =========================
